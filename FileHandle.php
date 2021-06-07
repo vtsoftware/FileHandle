@@ -2,7 +2,13 @@
 namespace VtSoftware\Utils;
 
 class FileHandle {
-  private String $path = '';
+  private $fileInstance;
+
+  public String $path = '';
+
+  public bool $autoread = false;
+  public bool $autosave = false;
+
   public int $dirPermissions = 0770;
   public bool $locked = false;
 
@@ -23,9 +29,24 @@ class FileHandle {
       } else {
         $createFile = !file_exists($this->path);
       }
+
       if ($createFile) {
         touch($this->path);
       }
     }
+
+    $this->fileInstance = fopen($this->path, 'rw+');
+  }
+
+  public function write(String $data): void {
+    fwrite($this->fileInstance, $data);
+  }
+
+  public function read(): String {
+    return fread($this->fileInstance, filesize($this->path));
+  }
+
+  public function __destruct() {
+    fclose($this->fileInstance);
   }
 }
