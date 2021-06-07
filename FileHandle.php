@@ -54,6 +54,8 @@ class FileHandle {
       }
     }
 
+    file_put_contents($this->path.'.lock', time());
+
     fwrite($this->fileInstance, $data);
 
     if ($locked) {
