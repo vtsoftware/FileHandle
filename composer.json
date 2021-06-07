@@ -1,0 +1,11 @@
+{
+    "name": "vtsoftware/filehandler",
+    "type": "library",
+    "authors": [
+        {
+            "name": "vtsoftware",
+            "email": "tamas@verten.hu"
+        }
+    ],
+    "require": {}
+}
