@@ -12,6 +12,9 @@ class FileHandle {
   public int $dirPermissions = 0770;
   public bool $locked = false;
 
+  public int $unlockWaitIterations = 3;
+  public float $unlockCheckTimeout = 0.5;
+
   function __construct(public String $dir, public ?String $file = null, public bool $creator = false, public bool $locking = false) {
     if ($this->file === null) {
       $this->dir = dirname($dir);
@@ -39,7 +42,23 @@ class FileHandle {
   }
 
   public function write(String $data): void {
+    $locked = file_exists($this->path.'.lock');
+
+    if ($locked) {
+      for($i = $this->unlockWaitIterations; $i > 0; $i--) {
+        if (!file_exists($this->path.'.lock')) {
+          break;
+        }
+
+        usleep($this->unlockCheckTimeout * 1000000);
+      }
+    }
+
     fwrite($this->fileInstance, $data);
+
+    if ($locked) {
+      unlink($this->path.'.lock');
+    }
   }
 
   public function read(): String {
